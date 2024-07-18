@@ -23,6 +23,13 @@ gcloud artifacts repositories create ${APP} --repository-format Docker --locatio
 gcloud builds submit --tag  ${TAG} --project progetti-poc
 ```
 
+Or
+
+```console
+docker build -t ${TAG} .
+docker push ${TAG}
+```
+
 4. Deploy 
 
 ```console
