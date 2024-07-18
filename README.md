@@ -33,7 +33,7 @@ docker push ${TAG}
 4. Deploy 
 
 ```console
-gcloud run deploy $APP --image $TAG --platform managed --region $REGION --port $PORT --allow-unauthenticated --env-vars-file=.env.gcloud
+gcloud run deploy $APP --image $TAG --platform managed --region $REGION --port $PORT --allow-unauthenticated --cpu 2 --memory 1Gi --env-vars-file=.env.gcloud
 ```
 
 5. Clean 

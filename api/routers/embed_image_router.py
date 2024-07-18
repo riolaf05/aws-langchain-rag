@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, status
 from utils.subscription_manager import FileUploader
 from utils.aws_services import AWSS3
 from utils.database_managers import QDrantDBManager
@@ -10,6 +10,7 @@ from utils.language_models import LangChainAI
 import base64
 import openai
 from uuid import uuid4
+import json
 import os
 
 router = APIRouter()
@@ -71,24 +72,27 @@ async def upload(file: UploadFile = File(...)):
     Embed an image on the Vector DB and upload it on S3
 
     """
+    if file.content_type != 'application/json':
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Non permesso!")
+    
     try:
-
-        print(file)
-        file_extension = file.filename.split(".")[-1]
-        file_name = f"{uuid4()}.{file_extension}"
-        fileobj=file.file
-        base64_image = encode_image(fileobj)
-        prompt = "Descrivi l'immagine in dettaglio."
+        data = json.loads(file.file.read())
+        base64_image = encode_image(data)
+        prompt = "Descrivi l'immagine in dettaglio:"
         summarization = image_summarize(base64_image,prompt)
-
-        response = summarization
-
+    
         # Upload the file on S3
         # response = fileUploader.pass_file_to_upload("raw_documents", file)
-        return response
 
     except Exception as e:
         # Catch any other errors
         logger.error(f"Unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
+    
+    return {
+        "filename":file.filename,
+        "content":summarization
+    }
+        
+
     
