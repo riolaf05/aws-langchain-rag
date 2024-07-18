@@ -1,10 +1,11 @@
 locals {
-  backend_endpoint = "https://riassume-n7hipqzqsq-oc.a.run.app"
+  app_name         = "rio-fastapi-sns"
+  backend_endpoint = ""
 }
 
 module "sns_raw" {
   source = "git::https://github.com/riolaf05/terraform-modules//aws/sns-topic"
-  project_name = "riassume-raw-documents"
+  project_name = "${local.app_name}-raw-documents"
   bucket_name = module.s3.bucket_name
   bucket_arn = module.s3.bucket_arn
   filter_prefix = aws_s3_object.object_raw.key
@@ -12,7 +13,7 @@ module "sns_raw" {
 
 module "sns_processed" {
   source = "git::https://github.com/riolaf05/terraform-modules//aws/sns-topic"
-  project_name = "riassume-processed-documents"
+  project_name = "${local.app_name}-processed-documents"
   bucket_name = module.s3.bucket_name
   bucket_arn = module.s3.bucket_arn
   filter_prefix = aws_s3_object.object_processed.key
@@ -39,7 +40,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 resource "aws_sns_topic_subscription" "sns_raw" {
   topic_arn = module.sns_raw.topic_arn
   protocol  = "https"
-  endpoint  = "${local.backend_endpoint}/subscribe/summarization"
+  endpoint  = "${local.backend_endpoint}/summarization"
   endpoint_auto_confirms = false
   delivery_policy = <<EOF
         {

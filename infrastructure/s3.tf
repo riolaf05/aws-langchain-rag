@@ -4,13 +4,13 @@ module "s3" {
   source = "git::https://github.com/riolaf05/terraform-modules//aws/s3"
 
   project_info = {
-    name   = "rio-fastapi-sns"
-    prefix = "rio-fastapi-sns"
+    name   = local.app_name
+    prefix = local.app_name
     env    = "dev"
   }
 
   bucket_name      = "documents-bucket"
-  ssm_param_prefix = "rio-fastapi-sns"
+  ssm_param_prefix = local.app_name
   bucket_user_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/rosario.laface"
 }
 
