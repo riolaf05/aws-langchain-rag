@@ -45,15 +45,23 @@ gcloud run services list
 
 # Setup of Infrastructure
 
-1. Get the app url from GCP 
+1. Comment the `aws_sns_topic_subscription` from the `sns.tf` file
 
-2. Set the `backend_endpoint` variable in `infrastructure\sns.tf` according to CLoud Run endpoint. This will be used by the SNS subscription to confirm itself.
+2. Get the app url from GCP 
 
-3. Apply with `terraform apply`
+3. Set the `backend_endpoint` variable in `infrastructure\sns.tf` according to CLoud Run endpoint. This will be used by the SNS subscription to confirm itself.
 
-4. Update GCP app environment variables:
+4. Apply with `terraform apply`
+
+5. Update GCP app environment variables:
     - AWS_S3_BUCKET_NAME 
     - SNS_ENDPOINT_SUBSCRIBE 
     - SNS_TOPIC (arn)
 
    and re-deploy the app.
+
+6. Enable `aws_sns_topic_subscription` and `terraform apply` again.
+
+# References
+
+* [python-sns-publish-listen](https://github.com/dstilesr/python-sns-publish-listen/tree/master)

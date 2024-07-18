@@ -1,0 +1,36 @@
+{
+      "eventVersion":"2.1",
+      "eventSource":"aws:s3",
+      "awsRegion":"us-east-1",
+      "eventTime":"2024-07-18T11:55:58.572Z",
+      "eventName":"ObjectCreated:Put",
+      "userIdentity":{
+         "principalId":"AWS:AIDA4ZPFNA2NMIWYAJA6C"
+      },
+      "requestParameters":{
+         "sourceIPAddress":"35.203.246.162"
+      },
+      "responseElements":{
+         "x-amz-request-id":"N62DKR5HRBDDDSFN",
+         "x-amz-id-2":"/L8Xh/CZ1Kb9VMN8w4ap7Gl6Sfqk4mqrOk4UWvqmFgrl+9Xf/VXPuh4v+COdAdv4eLt9Kgu97e6gmXY8GTEWzVYIRifbmDXJ"
+      },
+      "s3":{
+         "s3SchemaVersion":"1.0",
+         "configurationId":"tf-s3-topic-20240718105828037300000001",
+         "bucket":{
+            "name":"rio-fastapi-sns-rag-bucket",
+            "ownerIdentity":{
+               "principalId":"A2F923XUXVO4PA"
+            },
+            "arn":"arn:aws:s3:::rio-fastapi-sns-rag-bucket"
+         },
+         "object":{
+            "key":"raw_documents/c03a985b-9a77-4365-a25a-b58ada8a2557.mp4",
+            "size":4033033,
+            "eTag":"d8b80eeddf805494f81f64d9da34ef64",
+            "sequencer":"00669902CD8C415A43"
+         }
+      }
+   }
+]
+}
