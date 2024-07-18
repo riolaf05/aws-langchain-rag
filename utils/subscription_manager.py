@@ -2,6 +2,10 @@ import os
 import boto3
 import logging
 from typing import Optional
+from utils.aws_services import AWSS3
+from fastapi import UploadFile, HTTPException
+from uuid import uuid4
+from botocore.exceptions import ClientError
 logger=logging.getLogger()
 
 SNS_TOPIC=os.getenv('SNS_TOPIC')
@@ -9,7 +13,58 @@ SNS_ENDPOINT_SUBSCRIBE=os.getenv('SNS_ENDPOINT_SUBSCRIBE')
 AWS_ACCESS_KEY_ID=os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY=os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION=os.getenv('AWS_REGION')
+AWS_S3_BUCKET_NAME=os.getenv('AWS_S3_BUCKET_NAME')
 
+class FileUploader:
+    def __init__(self):
+        self.logger = logging.getLogger("fileUploader")
+        self.s3_client = AWSS3(AWS_S3_BUCKET_NAME)
+
+    def pass_file_to_upload(self, raw_document_folder,  file_obj: UploadFile) -> dict:
+        """
+        Upload a file to S3.
+
+        Args:
+        file_obj (UploadFile): The file to upload.
+
+        Returns:
+        dict: A dictionary containing the upload result.
+        """
+        file_extension = file_obj.filename.split(".")[-1]
+        file_name = f"{uuid4()}.{file_extension}"
+        file_path_in_s3 = f"{raw_document_folder}/{file_name}"
+        
+        try:
+            success = self.s3_client.upload_file(
+                fileobj=file_obj.file, 
+                key=file_path_in_s3,  
+                )
+            
+            if success:
+                self.logger.info(
+                        f"Successfully stored {file_name} to S3 bucket {AWS_S3_BUCKET_NAME}/{raw_document_folder}."
+                    )
+                return {
+                    "success": True,
+                    "message": f"Successfully stored {file_name} to S3 bucket {AWS_S3_BUCKET_NAME}/{raw_document_folder}.",
+                        }
+            else:
+                self.logger.error(
+                    f"Failed to store {file_name} to S3 bucket {AWS_S3_BUCKET_NAME}/{raw_document_folder}."
+                )
+                return {
+                    "success": False,
+                    "message": f"Failed to store {file_name} to S3 bucket {AWS_S3_BUCKET_NAME}/{raw_document_folder}.",
+                }
+
+        except ClientError as e:
+            self.logger.error(f"Error uploading file '{file_obj.filename}' to S3 {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+        except Exception as e:
+            self.logger.error(f"Error uploading file '{file_obj.filename}' to S3 {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=str(e))
+
+#####################################################
 
 class SubscriptionManager(object):
     """
