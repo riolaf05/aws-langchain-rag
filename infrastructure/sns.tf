@@ -1,6 +1,6 @@
 locals {
   app_name         = "rio-fastapi-sns"
-  backend_endpoint = ""
+  backend_endpoint = "https://rio-fastapi-sns-n7hipqzqsq-oc.a.run.app"
 }
 
 module "sns_raw" {
@@ -37,28 +37,28 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   }
 }
 
-# resource "aws_sns_topic_subscription" "sns_raw" {
-#   topic_arn = module.sns_raw.topic_arn
-#   protocol  = "https"
-#   endpoint  = "${local.backend_endpoint}/summarization"
-#   endpoint_auto_confirms = false
-#   delivery_policy = <<EOF
-#         {
-#             "healthyRetryPolicy": {
-#             "minDelayTarget": 1,
-#             "maxDelayTarget": 60,
-#             "numRetries": 50,
-#             "numNoDelayRetries": 3,
-#             "numMinDelayRetries": 2,
-#             "numMaxDelayRetries": 35,
-#             "backoffFunction": "linear"
-#         },
-#         "throttlePolicy": {
-#             "maxReceivesPerSecond": 10
-#         },
-#         "requestPolicy": {
-#             "headerContentType": "application/json; charset=UTF-8"
-#         }
-#     }
-#     EOF
-# }
+resource "aws_sns_topic_subscription" "sns_raw" {
+  topic_arn = module.sns_raw.topic_arn
+  protocol  = "https"
+  endpoint  = "${local.backend_endpoint}/summarization"
+  endpoint_auto_confirms = false
+  delivery_policy = <<EOF
+        {
+            "healthyRetryPolicy": {
+            "minDelayTarget": 1,
+            "maxDelayTarget": 60,
+            "numRetries": 50,
+            "numNoDelayRetries": 3,
+            "numMinDelayRetries": 2,
+            "numMaxDelayRetries": 35,
+            "backoffFunction": "linear"
+        },
+        "throttlePolicy": {
+            "maxReceivesPerSecond": 10
+        },
+        "requestPolicy": {
+            "headerContentType": "application/json; charset=UTF-8"
+        }
+    }
+    EOF
+}
