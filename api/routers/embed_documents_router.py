@@ -72,7 +72,7 @@ async def upload(file: UploadFile = File(...)):
 
             return {
                 "filename":file.filename,
-                "content": "Embedded: "+len(chunked_documents)+" documents!"
+                "content": "Embedded: "+str(len(chunked_documents))+" documents!"
             }
             
         except Exception as e:
