@@ -24,7 +24,7 @@ text_splitter = TextSplitter(
 
 
 QDRANT_URL=os.getenv('QDRANT_URL')
-COLLECTION_NAME="images"
+COLLECTION_NAME="pdf"
 logger = logging.getLogger(__name__)
 qdrantClient = QDrantDBManager(
     url=QDRANT_URL,
