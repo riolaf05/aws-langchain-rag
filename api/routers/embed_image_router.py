@@ -11,6 +11,7 @@ import base64
 import openai
 from uuid import uuid4
 import json
+from pathlib import Path
 import shutil
 import os
 
@@ -79,7 +80,7 @@ async def upload(file: UploadFile = File(...)):
     
     else:
         try:
-            destination=os.path.join("/tmp", file.filename)
+            destination= Path(os.path.join("/tmp", file.filename))
             print(destination)
             print(file.filename)
 
