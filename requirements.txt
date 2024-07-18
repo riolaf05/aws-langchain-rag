@@ -1,5 +1,6 @@
 boto3
 python-multipart
+fastembed
 fastapi==0.109.1
 uvicorn==0.22.0
 openai==1.31.0
