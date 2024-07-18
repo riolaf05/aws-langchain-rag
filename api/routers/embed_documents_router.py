@@ -42,8 +42,8 @@ async def upload(file: UploadFile = File(...)):
     Embed a document on the Vector DB and upload it on S3
 
     """
-    print(file.content_type)
-    if file.content_type != 'image/jpeg' and file.content_type != 'image/png':
+    # print(file.content_type)
+    if file.content_type != 'application/pdf':
         # Log the error
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File not allowed!")
     
