@@ -7,6 +7,7 @@ ENV VIRTUAL_ENV=/usr/local
 
 # Install dependencies
 COPY requirements.txt ./
+RUN apt-get install gcc -y
 RUN pip install --upgrade pip=="24.0" && pip install uv=="0.1.29" && uv pip install --no-cache -r requirements.txt
 
 # Copy the project files
