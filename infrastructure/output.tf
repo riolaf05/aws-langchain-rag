@@ -7,6 +7,6 @@ output "sns_raw_arn" {
 }
 
 output "sns_enpoint_subscription_url" {
-  value = "${local.backend_endpoint}/subscribe/summarization"
+  value = "${local.backend_endpoint}/summarization"
 }
 

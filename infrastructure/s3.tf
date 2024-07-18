@@ -9,7 +9,7 @@ module "s3" {
     env    = "dev"
   }
 
-  bucket_name      = "documents-bucket"
+  bucket_name      = "rag-bucket"
   ssm_param_prefix = local.app_name
   bucket_user_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/rosario.laface"
 }

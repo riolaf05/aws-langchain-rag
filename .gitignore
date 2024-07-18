@@ -1,3 +1,5 @@
 **.env
-**.terraform
+**.terraform/
 **.env.gcloud
+**.tfstate
+**.tfstate.backup
