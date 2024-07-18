@@ -73,7 +73,7 @@ async def upload(file: UploadFile = File(...)):
 
     """
     print(file.content_type)
-    if file.content_type != 'image/jpeg' | file.content_type != 'image/png':
+    if file.content_type != 'image/jpeg' or file.content_type != 'image/png':
         # Log the error
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Non permesso!")
     
