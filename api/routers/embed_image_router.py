@@ -73,33 +73,39 @@ async def upload(file: UploadFile = File(...)):
     Embed an image on the Vector DB and upload it on S3
 
     """
-    print(file.content_type)
     if file.content_type != 'image/jpeg' and file.content_type != 'image/png':
         # Log the error
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Non permesso!")
     
-    try:
-        destination=os.path.join("/tmp", file.filename)
-        with destination.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        base64_image = encode_image(destination)
-        prompt = "Descrivi l'immagine in dettaglio:"
-        summarization = image_summarize(base64_image,prompt)
-        os.remove(destination)
-    
-        # Upload the file on S3
-        # response = fileUploader.pass_file_to_upload("raw_documents", file)
+    else:
+        try:
+            destination=os.path.join("/tmp", file.filename)
+            print(destination)
+            print(file.filename)
 
-    except Exception as e:
-        # Catch any other errors
-        logger.error(f"Unexpected error: {str(e)}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred")
+            with destination.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+            os.listdir("/tmp")
+            
+            base64_image = encode_image(destination)
+            prompt = "Descrivi l'immagine in dettaglio:"
+            summarization = image_summarize(base64_image,prompt)
+            os.remove(destination)
+        
+            # Upload the file on S3
+            # response = fileUploader.pass_file_to_upload("raw_documents", file)
+
+            return {
+                "filename":file.filename,
+                "content":summarization
+            }
+            
+        except Exception as e:
+            # Catch any other errors
+            logger.error(f"Unexpected error: {str(e)}")
+            raise HTTPException(status_code=500, detail="An unexpected error occurred: "+str(e))
     
-    return {
-        "filename":file.filename,
-        "content":summarization
-    }
         
 
     
