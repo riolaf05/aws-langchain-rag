@@ -11,6 +11,7 @@ import base64
 import openai
 from uuid import uuid4
 import json
+import shutil
 import os
 
 router = APIRouter()
@@ -78,10 +79,14 @@ async def upload(file: UploadFile = File(...)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Non permesso!")
     
     try:
-        data = json.loads(file.file.read())
-        base64_image = encode_image(data)
+        destination=os.path.join("/tmp", file.filename)
+        with destination.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        base64_image = encode_image(destination)
         prompt = "Descrivi l'immagine in dettaglio:"
         summarization = image_summarize(base64_image,prompt)
+        os.remove(destination)
     
         # Upload the file on S3
         # response = fileUploader.pass_file_to_upload("raw_documents", file)
