@@ -51,8 +51,7 @@ async def upload(file: UploadFile = File(...)):
         try:
             #download file
             destination= Path(os.path.join("/tmp", file.filename))
-            print(destination)
-            print(file.filename)
+            filename=file.filename
 
             with destination.open("wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
@@ -62,6 +61,7 @@ async def upload(file: UploadFile = File(...)):
             loader = PyPDFLoader(destination)
             documents.extend(loader.load())
             chunked_documents = text_splitter.fixed_split(documents)
+            #TODO ADD METADATATA
             qdrantClient.index_documents(chunked_documents)
             
             #clear
