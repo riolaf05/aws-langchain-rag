@@ -11,7 +11,7 @@ fileUploader = FileUploader()
 logger = logging.getLogger(__name__)
 
 @router.post("/upload", operation_id="upload")
-async def upload(file: list[UploadFile] = File(...)):
+async def upload(file: UploadFile = File(...)):
     """
     Upload a file on S3
 
