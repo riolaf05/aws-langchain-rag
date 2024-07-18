@@ -1,4 +1,4 @@
-# Setup on GCP Cloud RUN 
+# Setup on FastAPI app on GCP Cloud RUN 
 
 1. Create exports
 
@@ -35,3 +35,18 @@ gcloud run deploy $APP --image $TAG --platform managed --region $REGION --port $
 gcloud run services delete $APP --region $REGION 
 gcloud run services list
 ```
+
+# Setup of Infrastructure
+
+1. Get the app url from GCP 
+
+2. Set the `backend_endpoint` variable in `infrastructure\sns.tf` according to CLoud Run endpoint. This will be used by the SNS subscription to confirm itself.
+
+3. Apply with `terraform apply`
+
+4. Update GCP app environment variables:
+    - AWS_S3_BUCKET_NAME 
+    - SNS_ENDPOINT_SUBSCRIBE 
+    - SNS_TOPIC (arn)
+
+   and re-deploy the app.
