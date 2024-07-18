@@ -1,4 +1,5 @@
 boto3
+pypdf
 python-multipart
 fastembed
 fastapi==0.109.1
