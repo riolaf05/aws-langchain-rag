@@ -61,7 +61,7 @@ async def upload(file: UploadFile = File(...)):
             documents = []
             loader = PyPDFLoader(destination)
             documents.extend(loader.load())
-            chunked_documents = text_splitter.split_documents(documents)
+            chunked_documents = text_splitter.fixed_split(documents)
             qdrantClient.index_documents(chunked_documents)
             
             #clear
