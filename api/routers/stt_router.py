@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from fastapi import APIRouter, File, UploadFile, HTTPException, status
 from utils.subscription_manager import FileUploader
@@ -8,10 +7,7 @@ from utils.embedding import EmbeddingFunction
 from utils.text_processing import TextSplitter
 from utils.language_models import LangChainAI
 from utils.speech_to_text import SpeechToText
-import base64
-import openai
 from uuid import uuid4
-import json
 from pathlib import Path
 import shutil
 import os
@@ -53,8 +49,6 @@ async def upload(file: UploadFile = File(...)):
     else:
         try:
             destination= Path(os.path.join("/tmp", file.filename))
-            print(destination)
-            print(file.filename)
 
             with destination.open("wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
