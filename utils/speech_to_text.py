@@ -1,18 +1,23 @@
 import re
 import os
 import logging
-import moviepy.editor as mp
-import speech_recognition as sr
+# import moviepy.editor as mp
 from langchain_community.llms import openai
-
 from utils.aws_services import AWSTranscribe
-from config.environments import OPENAI_API_KEY
-from config.constants import FILE_EXTENSIONS
+
+FILE_EXTENSIONS = {
+    "image": {".png", ".jpg", ".jpeg", ".gif", ".svg", ".bmp", ".tiff"},
+    "audio": {".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac", ".wma"},
+    "video": {".mp4", ".mov", ".avi", ".webm", ".flv", ".mkv", ".webp"},
+    "text": {".txt", ".docx", ".pdf"},
+}
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+STT_BUCKET = os.getenv('STT_BUCKET')
 
 
 class SpeechToText:
 
-    def __init__(self, model: str, bucket: str = "newsp4-transcribe-docs-bucket"):
+    def __init__(self, model: str, bucket: str = STT_BUCKET):
         # Setup the logger
         self.logger = logging.getLogger(__name__)
         self.logger.propagate = False
@@ -54,38 +59,6 @@ class SpeechToText:
         except Exception as e:
             self.logger.error(
                 f"Error in extracting audio from video file '{video_file}'"
-            )
-            raise e
-
-    # Function to perform speech to text conversion
-    def speech_to_text(self, audio_file) -> str:
-        """Records audio from an audio file then pass it to google cloud speech to text API to extract text"""
-        try:
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(audio_file) as source:
-                audio = recognizer.record(source)
-                # Was recognizer.recognize_google(audio) but it is not defined in the module
-                # IMPORTANT: This will rquire google credentials in json file to be added to environment values
-                text = recognizer.recognize_google_cloud(audio)
-                self.logger.info(
-                    f"Text has been extracted using google cloud from audio file '{audio_file}'"
-                )
-
-                # Remove the temporary WAV file if it was created
-                if audio_file.endswith(".wav") and audio_file != os.path.basename(
-                    audio_file
-                ):
-                    os.remove(audio_file)
-
-                return text
-
-        except FileNotFoundError as e:
-            self.logger.error(f"File '{audio_file}' not found")
-            raise e
-
-        except Exception as e:
-            self.logger.error(
-                f"Error in speech to text conversion of audio file '{audio_file}'"
             )
             raise e
 
@@ -146,6 +119,7 @@ class SpeechToText:
                 )
                 raise ValueError("Unsupported model")
 
+             #FIXME: deactivating to reduce Docker size!!
             # if self.model == 'whisper-base':
             #     model = whisper.load_model("base")
             #     text = model.transcribe(file_path)
@@ -159,36 +133,37 @@ class SpeechToText:
                 )
                 return text
 
-            elif self.model.startswith("gpt"):
-                # if file_path is:
-                # an audio file skip extract_audio
-                # a text skip it to speech_to_text
-                if file_extension in self.VIDEO_EXTENSIONS:
-                    # Step 1: Extract audio from video
-                    audio_file = self.extract_audio(file_path)
-                    # Step 2: Convert speech to text
-                    text = self.speech_to_text(audio_file)
-                    # Step 3: Clean the text
-                    cleaned_text = self.clean_text(text)
+            #FIXME: deactivating to reduce Docker size!!
+            # elif self.model.startswith("gpt"):
+            #     # if file_path is:
+            #     # an audio file skip extract_audio
+            #     # a text skip it to speech_to_text
+            #     if file_extension in self.VIDEO_EXTENSIONS:
+            #         # Step 1: Extract audio from video
+            #         audio_file = self.extract_audio(file_path)
+            #         # Step 2: Convert speech to text
+            #         text = self.speech_to_text(audio_file)
+            #         # Step 3: Clean the text
+            #         cleaned_text = self.clean_text(text)
 
-                elif file_extension in self.AUDIO_EXTENSIONS:
-                    # Convert audio file to WAV if it's not in WAV format
-                    if file_extension != "wav":
-                        wav_file = os.path.splitext(file_path)[0] + ".wav"
-                        audio = mp.AudioFileClip(file_path)
-                        audio.write_audiofile(wav_file)
-                        file_path = wav_file
-                    text = self.speech_to_text(file_path)
-                    cleaned_text = self.clean_text(text)
+            #     elif file_extension in self.AUDIO_EXTENSIONS:
+            #         # Convert audio file to WAV if it's not in WAV format
+            #         if file_extension != "wav":
+            #             wav_file = os.path.splitext(file_path)[0] + ".wav"
+            #             audio = mp.AudioFileClip(file_path)
+            #             audio.write_audiofile(wav_file)
+            #             file_path = wav_file
+            #         text = self.speech_to_text(file_path)
+            #         cleaned_text = self.clean_text(text)
 
-                elif file_extension in self.TEXT_EXTENSIONS:
-                    with open(file_path, "r") as f:
-                        text = f.read()
-                        cleaned_text = self.clean_text(text)
+            #     elif file_extension in self.TEXT_EXTENSIONS:
+            #         with open(file_path, "r") as f:
+            #             text = f.read()
+            #             cleaned_text = self.clean_text(text)
 
-                # Step 4: Input text to OpenAI API
-                improvised_text = self.openai_api(cleaned_text)
-                return improvised_text
+            #     # Step 4: Input text to OpenAI API
+            #     improvised_text = self.openai_api(cleaned_text)
+            #     return improvised_text
 
             else:
                 pass
