@@ -35,20 +35,20 @@ qdrantClient = QDrantDBManager(
 )
 retriever = qdrantClient.vector_store.as_retriever()
 
-@router.post("/embed_riassume_pdf", operation_id="embed_riassume_pdf")
+@router.post("/stt", operation_id="stt")
 async def upload(file: UploadFile = File(...)):
     """
     Extract text from an audio file, embed the text on the Vector DB and upload it on S3
 
     """
     print(file.content_type)
-    if file.content_type != 'application/pdf':
+    if file.content_type != 'audio/mpeg':
         # Log the error
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Non permesso!")
     
     else:
         try:
-            destination= Path(os.path.join("/tmp", file.filename))
+            destination= Path(os.path.join("/tmp", file.filename)) #FIXME ERROR:api.routers.stt_router:Unexpected error: 'str' object has no attribute 'open'
 
             with destination.open("wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
